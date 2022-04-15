@@ -1,0 +1,7 @@
+[Controls]
+
+[Key]					[Action]
+- WASD 					- Move
+- C 					- Parry attacks
+- SPACEBAR 				- Dash (Invulnerable state)
+- Left Mouse Button 	- Slash Attack & Shoots out a Slash projectile
