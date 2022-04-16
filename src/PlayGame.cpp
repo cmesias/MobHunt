@@ -26,6 +26,7 @@
 // TODO [ ] 4/9/2022: change chest tiles to correct id
 //		[ ] - fix texture breaking sprite for jars barrels
 // 		[ ] - Mob keeps shooting at Player even when Player is not in sight of Mob
+// 		[ ] - Sound for sValidation does not apply properly the volume we have in config
 
 void PlayGame::Init() {
 
@@ -200,7 +201,7 @@ void PlayGame::Load(LWindow &gWindow, SDL_Renderer *gRenderer)
 	gTileBreak.setBlendMode(SDL_BLENDMODE_ADD);
 
 	// Tile Jars
-	gJar.loadFromFile(gRenderer, "resource/gfx/zelda_pack/Jar_SpriteSheet.png");
+	gJar.loadFromFile(gRenderer, "resource/gfx/jar_spritesheet.png");
 	rJar[0] = {64*0,0,64,64};
 	rJar[1] = {64*1,0,64,64};
 	rJar[2] = {64*2,0,64,64};
@@ -1143,6 +1144,27 @@ void PlayGame::RenderFG(SDL_Renderer *gRenderer, LWindow &gWindow) {
 // Render shadows
 void PlayGame::RenderShadows(SDL_Renderer *gRenderer, LWindow &gWindow) {
 
+	// Render shadow for Tiles.cpp
+	{
+		for (int i = 0; i < tl.max; i++) {
+			if (tile[i].alive) {
+				if (tile[i].id == 1) {
+					if (!tile[i].startJarBreaking) {
+
+						gShadow.setAlpha(110);
+						int shadowSizeW = tile[i].w * 0.80;
+						int shadowSizeH = tile[i].w * 0.50;
+						int yOffsetShadow = -5;
+						gShadow.render(gRenderer,
+								tile[i].x+tile[i].w/2 - shadowSizeW/2 - camx,
+								tile[i].y+tile[i].h - shadowSizeH/2+yOffsetShadow - camy,
+								shadowSizeW, shadowSizeH);
+					}
+				}
+			}
+		}
+	}
+
 	// Render shadow for Item.cpp
 	{
 		for (int i = 0; i < ite.max; i++) {
@@ -1653,7 +1675,8 @@ void PlayGame::checkCollisionParticleTile()
 											part.count--;
 
 											// Play hit sound effect
-											Mix_PlayChannel(-1, settings.sParrySuccess, 0);
+								            Mix_PlayChannel(-1, settings.sPotBreak, 0);
+								            Mix_PlayChannel(-1, settings.sValidation, 0);
 										}
 									}
 								}
@@ -1672,6 +1695,9 @@ void PlayGame::checkCollisionParticleTile()
 									particles[i].time = 0;
 									particles[i].alive = false;
 									part.count--;
+
+									// Play hit sound effect
+									Mix_PlayChannel(-1, settings.sParrySuccess, 0);
 								}
 
 							}
@@ -1999,7 +2025,7 @@ void PlayGame::checkPlayerTileCollision()
 			if (tile[i].collisionTile)
 			{
 				// Locked door Tile
-				if (tile[i].id == 2 || tile[i].id == 3 || tile[i].id == 12 || tile[i].id == 13)
+				if (tile[i].id == 5)
 				{
 					// If collision happened
 					if (checkCollision(player.getX(), player.getY(), player.getW(), player.getH(),
@@ -2042,13 +2068,13 @@ void PlayGame::checkPlayerTileCollision()
 						tile[i].promptSelf = true;
 
 						// If player has enough keys
-						if (player.getSilverKeys() > 0) {
+						//if (player.getSilverKeys() > 0) {
 
 							// If player is pressing equip
 							if (player.getEquipState()) {
 
 								// Reduce silver keys
-								player.IncreaseSilverKeys(-1);
+								//player.IncreaseSilverKeys(-1);
 
 								// Chang Tile into an unlocked chest
 								tile[i].promptSelf = false;
@@ -2065,7 +2091,7 @@ void PlayGame::checkPlayerTileCollision()
 								// play sound effect
 								Mix_PlayChannel(-1, settings.sCastHitBoss, 0);
 							}
-						}
+						//}
 					} else {
 						tile[i].promptSelf = false;
 					}
@@ -4452,11 +4478,15 @@ void PlayGame::LoadLevel()
 	}
 	fileTileDataL.close();
 
+	// Load spawn on level load
+	player.x		= this->spawnX;
+	player.y		= this->spawnY;
+
 	// Only do this for level 1
 	if (previousLevel == LevelToLoad) {
 		if (LevelToLoad == 1) {
-			player.x		= this->spawnX;
-			player.y		= this->spawnY;
+			//layer.x		= this->spawnX;
+			//player.y		= this->spawnY;
 		}
 	}
 

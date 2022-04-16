@@ -1635,13 +1635,14 @@ void Players::RenderUI(SDL_Renderer *gRenderer, int camX, int camY, int CurrentL
 
 		}
 
-		/*// Mana
+		// Mana
 		{
 			// Mana bar
-			int uiX = screenWidth * 0.95 - 100 - 10;
-			int uiY = screenHeight * 0.96 - 20 - 20 - 24 - 6;
+			int uiX = screenWidth * 0.95 - 100 - 15;
+			//int uiY = screenHeight * 0.96 - 20 - 20 - 24 - 6;	// lower right corner
+			int uiY = screenHeight * 0.05;	// top right corner
 
-			gText.loadFromRenderedText(gRenderer, "Mana", {255,255,255}, gFont13);
+			gText.loadFromRenderedText(gRenderer, "Mana", {255,255,255}, gFont12);
 			gText.render(gRenderer,  uiX-gText.getWidth()-2, uiY, gText.getWidth(), gText.getHeight());
 
 			// Render mana, bg
@@ -1664,10 +1665,11 @@ void Players::RenderUI(SDL_Renderer *gRenderer, int camX, int camY, int CurrentL
 		// Parry CD
 		{
 			// Parry bar
-			int uiX = screenWidth * 0.95 - 100 - 10;
-			int uiY = screenHeight * 0.96 - 20 - 20;
+			int uiX = screenWidth * 0.95 - 100 - 15;
+			//int uiY = screenHeight * 0.96 - 20 - 20;
+			int uiY = screenHeight * 0.05 + (24 * 1);	// top right corner
 
-			gText.loadFromRenderedText(gRenderer, "Parry CD ", {255,255,255}, gFont13);
+			gText.loadFromRenderedText(gRenderer, "Parry CD ", {255,255,255}, gFont12);
 			gText.render(gRenderer,  uiX-gText.getWidth()-2, uiY, gText.getWidth(), gText.getHeight());
 
 			// Render Parry, bg
@@ -1691,10 +1693,11 @@ void Players::RenderUI(SDL_Renderer *gRenderer, int camX, int camY, int CurrentL
 		// Dash counter
 		{
 			// Dash bar
-			int uiX = screenWidth * 0.95 - 100 - 10;
-			int uiY = screenHeight * 0.96 - 20 - 20 + 24 + 6;
+			int uiX = screenWidth * 0.95 - 100 - 15;
+			//int uiY = screenHeight * 0.96 - 20 - 20 + 24 + 6;
+			int uiY = screenHeight * 0.05 + (24 * 2);	// top right corner
 
-			gText.loadFromRenderedText(gRenderer, "Dash CD ", {255,255,255}, gFont13);
+			gText.loadFromRenderedText(gRenderer, "Dash CD ", {255,255,255}, gFont12);
 			gText.render(gRenderer,  uiX-gText.getWidth()-2, uiY, gText.getWidth(), gText.getHeight());
 
 			// Render dash, bg
@@ -1713,7 +1716,7 @@ void Players::RenderUI(SDL_Renderer *gRenderer, int camX, int camY, int CurrentL
 			tempRect = {uiX, uiY, (barWidth*this->maxMana)/this->maxMana, 24};
 			SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
 			SDL_RenderDrawRect(gRenderer, &tempRect);
-		}*/
+		}
 	}
 
 	// Hearts

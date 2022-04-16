@@ -39,7 +39,7 @@ public:
     //int screenWidth = 1920, screenHeight = 1080;
     //const int screenWidth = 1280, screenHeight = 720;
     //const int screenWidth = 960, screenHeight = 540;
-    const int screenWidth = 800, screenHeight = 380;
+    const int screenWidth = 800, screenHeight = 450;
     //const int screenWidth = 576, screenHeight = 320;
 
 

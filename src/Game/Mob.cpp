@@ -437,7 +437,7 @@ void Mob::Update(Mob mob[], Object &obj, Object object[],
 				if (mob[i].chargingAttack)
 				{
 					// Spawn bullet
-					int rands  = 24;
+					int rands  = 18;
 					float speed  = 2;
 					float tempX = mob[i].x + mob[i].w/2 - rands/2;
 					float tempY = mob[i].y + mob[i].h/2 - rands/2;
@@ -446,9 +446,9 @@ void Mob::Update(Mob mob[], Object &obj, Object object[],
 					if (mob[i].chargeTime == mob[i].attackFrame)
 					{
 						// Spawn projectile
-						p_dummy.spawnRedProjectileAttack(particle, 1, tempX, tempY, rands, rands, mob[i].angleFacingTarget-5, mob[i].damage, speed);
+						p_dummy.spawnRedProjectileAttack(particle, 1, tempX, tempY, rands, rands, mob[i].angleFacingTarget-15, mob[i].damage, speed);
 						p_dummy.spawnRedProjectileAttack(particle, 1, tempX, tempY, rands, rands, mob[i].angleFacingTarget, mob[i].damage, speed);
-						p_dummy.spawnRedProjectileAttack(particle, 1, tempX, tempY, rands, rands, mob[i].angleFacingTarget+5, mob[i].damage, speed);
+						p_dummy.spawnRedProjectileAttack(particle, 1, tempX, tempY, rands, rands, mob[i].angleFacingTarget+15, mob[i].damage, speed);
 
 						// Play SFX
 						playCastSFX = true;
@@ -1044,7 +1044,7 @@ void Mob::setStatsBasedOnType(Mob mob[], int i) {
 	if (mob[i].type == 0) {
 		mob[i].w 			= 14*2;
 		mob[i].h 			= 12*2;
-		mob[i].damage		= 50;
+		mob[i].damage		= 10;
 		mob[i].health 		= 30;
 		mob[i].maxHealth 	= 30;
 		mob[i].healthDecay 	= 30;
@@ -1059,7 +1059,7 @@ void Mob::setStatsBasedOnType(Mob mob[], int i) {
 	else if (mob[i].type == 1) {
 		mob[i].w 			= 14*2;
 		mob[i].h 			= 12*2;
-		mob[i].damage		= 25;
+		mob[i].damage		= 5;
 		mob[i].health 		= 20;
 		mob[i].maxHealth 	= 20;
 		mob[i].healthDecay 	= 20;
