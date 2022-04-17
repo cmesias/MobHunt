@@ -59,8 +59,11 @@ public:	// resources
 	 * 25: 		Coin
 	 * 26: 		Silver key
 	 * 27: 		Gold key
+	 * 28: Green health					8 x 7
+	 * 29: Power up 1					12 x 8
+	 * 30: Power up 2					12 x 9
 	 */
-	SDL_Rect rSwords[28];
+	SDL_Rect rSwords[31];
 
 	/*
 	 *
@@ -226,6 +229,8 @@ private:
 	bool attack;
 	bool spawnAttack;
 	float knockBackPower;	// Knock back power
+	int powerUp;			// 0: no power up, 1: 3 burst, 2: 360 burst
+	float powerUpTimer;
 
 	// Delay
 	float atkSpeed = 4.27;	// Player's attack speed
@@ -341,6 +346,9 @@ private:	// Variables used in Textures
 	 * 25: Coin 						10 x 10
 	 * 26: Silver key 					5 x 10
 	 * 27: Gold key 					5 x 10
+	 * 28: Green health					8 x 7
+	 * 29: Power up 1					12 x 8
+	 * 30: Power up 2					12 x 9
 	 */
 	int itemIndex = 0;
 
@@ -417,6 +425,9 @@ public:	// Mutator functions
 
 	// Set false to equip key state
 	void stopEquipState();
+
+	// Change powerup
+	void setPowerUp(int value);
 
 public:	// Accessor functions
 

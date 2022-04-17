@@ -31,7 +31,6 @@ public:	// Parent object Variables
 	const int max = 100;		// max number of instances
 	int count;					// number of instances
 
-
 	/* Item types
 	 *
 	 * 0: Wooden Sword
@@ -59,6 +58,8 @@ public:	// Parent object Variables
 	 * 26: Silver key 					5 x 10
 	 * 27: Gold key 					5 x 10
 	 * 28: Green health					8 x 7
+	 * 29: Power up 1					12 x 8
+	 * 30: Power up 2					12 x 9
 	 */
 	int id;			// id of instances
 
@@ -108,8 +109,10 @@ public:	// Resources
 	 * 26: Silver key 					5 x 10
 	 * 27: Gold key 					5 x 10
 	 * 28: Green health					8 x 7
+	 * 29: Power up 1					12 x 8
+	 * 30: Power up 2					12 x 9
 	 */
-	SDL_Rect rSwords[29];
+	SDL_Rect rSwords[31];
 
 public:	// Variables
 	float hoverAmount;

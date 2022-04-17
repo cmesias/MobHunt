@@ -74,6 +74,8 @@ void Players::Init(float spawnX, float spawnY, std::string newName){
 	this->attack 			= false;
 	this->spawnAttack 		= false;
 	this->attackType		= -1;
+	this->powerUp			= 0;
+	this->powerUpTimer		= 0;
 
 	// Delay
 	this->delayTimer		= 0;
@@ -302,6 +304,15 @@ void Players::Load(SDL_Renderer* gRenderer)
 
 		// Golden key
 		rSwords[27] = {87,45,7,15};
+
+		// Green health
+		rSwords[28] = {96,48,8,7};
+
+		// Power up 1
+		rSwords[29] = {99,22,12,8};
+
+		// Power up 2
+		rSwords[30] = {112,22,12,9};
 	}
 
 	// Other classes
@@ -351,7 +362,7 @@ void Players::fire(Particle particle[], Particle &p_dummy, Mix_Chunk *sCastSFX, 
 				shootDelay = true;
 
 				// play audio
-				Mix_PlayChannel(-1, settings->sCast, 0);
+				//Mix_PlayChannel(-1, settings->sCast, 0);
 
 				// Offset to spawn the Slash Attack
 				int offSetX =0;
@@ -364,11 +375,51 @@ void Players::fire(Particle particle[], Particle &p_dummy, Mix_Chunk *sCastSFX, 
 				float spawnX = x+w/2-offSetX;
 				float spawnY = y+w/2;
 
-				// Spawn Slash Attack particle
-				p_dummy.spawnRedProjectileAttack(particle, 0,
-						spawnX, spawnY,
-						16, 16,
-						this->angle, this->castDamage, 9);
+				// Default attack
+				if (powerUp == 0) {
+
+					// Spawn Slash Attack particle
+					p_dummy.spawnRedProjectileAttack(particle, 0,
+							spawnX, spawnY,
+							16, 16,
+							this->angle, this->castDamage, 9);
+				}
+
+				// Power up 1
+				else if (powerUp == 1) {
+
+
+					// Spawn projectile
+					int rands  = 24;
+					float speed  = 4;
+
+					for (double j=0.0; j< 30.0; j+=10){
+						p_dummy.spawnProjectileAttack(particle, 0,
+								this->x + this->w/2 - rands/2,
+								this->y + this->h/2 - rands/2,
+								rands, rands, this->angle+j, this->castDamage/4, speed,
+								{220, 90, 90});
+					}
+
+					// play audio
+					Mix_PlayChannel(1, settings->sCast, 0);
+				}
+
+				// Power up 2
+				else if (powerUp == 2) {
+
+					// Spawn projectile
+					int rands  = 24;
+					float speed  = 6;
+
+					for (double j=0.0; j< 45.0; j+=9){
+						p_dummy.spawnProjectileAttack(particle, 0,
+								this->x + this->w/2 - rands/2,
+								this->y + this->h/2 - rands/2,
+								rands, rands, this->angle-11+j, this->castDamage/4, speed,
+								{90, 220, 90});
+					}
+				}
 
 				// Subtract mana
 				this->mana -= 2;
@@ -397,6 +448,36 @@ void Players::fire(Particle particle[], Particle &p_dummy, Mix_Chunk *sCastSFX, 
 
 			// Reset shoot timer
 			shootTimer = 0;
+		}
+	}
+
+	// Handle power up timer
+	if (powerUp == 1) {
+		powerUpTimer += 1;
+
+		// If power up down
+		if (powerUpTimer > 60 * 5) {
+
+			// Stop power up
+			powerUpTimer = 0;
+
+			// Set to default attack
+			powerUp = 0;
+		}
+	}
+
+	// Handle power up timer
+	if (powerUp == 2) {
+		powerUpTimer += 1;
+
+		// If power up down
+		if (powerUpTimer > 60 * 3) {
+
+			// Stop power up
+			powerUpTimer = 0;
+
+			// Set to default attack
+			powerUp = 0;
 		}
 	}
 }
@@ -861,6 +942,10 @@ void Players::Update(Map &map,
 
 									// Play slash sound effect
 									Mix_PlayChannel(-1, settings->sSlash, 0);
+
+									// Play slash sound effect
+									int randInt = rand() % 5;
+									//Mix_PlayChannel(-1, settings->sGrunts[randInt], 0);
 
 									// Start delay
 									this->delay = true;
@@ -1899,7 +1984,7 @@ void Players::RenderDebug(SDL_Renderer *gRenderer, int camX, int camY)
 	//--------------------------------------------------------//
 
 	std::stringstream tempsi;
-	tempsi << "attack: " << attack << ", delay: " << delay;
+	tempsi << "PU: " << powerUp << ", T: " << powerUpTimer;
 	gText.loadFromRenderedText(gRenderer, tempsi.str().c_str(), {255,255,255}, gFont12);
 	gText.render(gRenderer, x-camX, y-h-camY-gText.getHeight(), gText.getWidth(), gText.getHeight());
 
@@ -2312,6 +2397,12 @@ void Players::EquipSword(int itemIndex, float itemDamage, float itemAtkSpeed)
 
 void Players::stopEquipState() {
 	this->pressedEquipKey = false;
+}
+
+
+void Players::setPowerUp(int value) {
+	this->powerUp = value;
+	this->powerUpTimer = 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

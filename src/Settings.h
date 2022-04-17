@@ -57,6 +57,8 @@ public:	// Exclusive for this game
 	Mix_Chunk *sPotBreak			= NULL;
 	Mix_Chunk *sValidation			= NULL;
 
+	Mix_Chunk *sGrunts[5];
+
 	void LoadAudio();
 	void FreeAudio();
 

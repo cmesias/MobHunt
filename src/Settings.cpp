@@ -150,6 +150,11 @@ void Settings::LoadAudio()
 	sCastHitBoss		= Mix_LoadWAV("sounds/bfxr/snd_castHitBoss.wav");
 	sPotBreak			= Mix_LoadWAV("sounds/snd_potBreak.wav");
 	sValidation			= Mix_LoadWAV("sounds/zelda_pack/snd_validation.wav");
+	sGrunts[0]			= Mix_LoadWAV("sounds/cmesias/snd_grunt1.wav");
+	sGrunts[1]			= Mix_LoadWAV("sounds/cmesias/snd_grunt2.wav");
+	sGrunts[2]			= Mix_LoadWAV("sounds/cmesias/snd_grunt3.wav");
+	sGrunts[3]			= Mix_LoadWAV("sounds/cmesias/snd_grunt4.wav");
+	sGrunts[4]			= Mix_LoadWAV("sounds/cmesias/snd_grunt5.wav");
 }
 
 void Settings::FreeAudio()
@@ -183,6 +188,11 @@ void Settings::FreeAudio()
 	sCastHitBoss		= NULL;
 	sPotBreak			= NULL;
 	sValidation			= NULL;
+
+	for (int i=0; i<5; i++) {
+		Mix_FreeChunk(sGrunts[i]);
+		sGrunts[i]		= NULL;
+	}
 }
 
 //Get's input from user and returns it
@@ -800,7 +810,12 @@ void Settings::ApplyAudioCfgToSFX() {
 	Mix_VolumeChunk(sDownStabHitTilec	, getSfxVolume());
 	Mix_VolumeChunk(sSlashHitBoss		, getSfxVolume());
 	Mix_VolumeChunk(sCastHitBoss		, getSfxVolume());
+	Mix_VolumeChunk(sPotBreak			, getSfxVolume());
 	Mix_VolumeChunk(sValidation			, getSfxVolume());
+
+	for (int i=0; i<5; i++) {
+		Mix_VolumeChunk(sGrunts[i]			, getSfxVolume());
+	}
 }
 
 void Settings::ApplyAudioCfgToSFX(Settings &settings) {
@@ -818,7 +833,12 @@ void Settings::ApplyAudioCfgToSFX(Settings &settings) {
 	Mix_VolumeChunk(settings.sDownStabHitTilec	, getSfxVolume());
 	Mix_VolumeChunk(settings.sSlashHitBoss		, getSfxVolume());
 	Mix_VolumeChunk(settings.sCastHitBoss		, getSfxVolume());
+	Mix_VolumeChunk(settings.sPotBreak			, getSfxVolume());
 	Mix_VolumeChunk(settings.sValidation		, getSfxVolume());
+
+	for (int i=0; i<5; i++) {
+		Mix_VolumeChunk(settings.sGrunts[i]		, getSfxVolume());
+	}
 }
 
 /*

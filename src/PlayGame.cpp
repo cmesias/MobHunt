@@ -1630,18 +1630,30 @@ void PlayGame::checkCollisionParticleTile()
 											if (tile[j].health <= 0) {
 												// Spawn random item
 												{
-													// Spawn health or coin
-													int randNum = rand() % 6;
+													// Spawn health or coin, or power up 1 or power up 2
+													int randNum = rand() % 10;
 													int tempID;
 
-													if (randNum == 0) {
+													if (randNum >= 0 && randNum <= 2) {
 														tempID = 25;
 														ite.SpawnAndThrowItem(item,
 																tile[j].x+tile[j].w/2-ite.rSwords[tempID].w/2,
 																tile[j].y+tile[j].h/2-ite.rSwords[tempID].h/2,
 																tempID, 0.0, randDouble(1, 2));
-													} else if (randNum == 2) {
+													} else if (randNum >= 3 && randNum <= 5) {
 														tempID = 28;
+														ite.SpawnAndThrowItem(item,
+																tile[j].x+tile[j].w/2-ite.rSwords[tempID].w/2,
+																tile[j].y+tile[j].h/2-ite.rSwords[tempID].h/2,
+																tempID, 0.0, randDouble(1, 2));
+													} else if (randNum == 6) {
+														tempID = 29;
+														ite.SpawnAndThrowItem(item,
+																tile[j].x+tile[j].w/2-ite.rSwords[tempID].w/2,
+																tile[j].y+tile[j].h/2-ite.rSwords[tempID].h/2,
+																tempID, 0.0, randDouble(1, 2));
+													} else if (randNum == 7) {
+														tempID = 30;
 														ite.SpawnAndThrowItem(item,
 																tile[j].x+tile[j].w/2-ite.rSwords[tempID].w/2,
 																tile[j].y+tile[j].h/2-ite.rSwords[tempID].h/2,
@@ -1932,6 +1944,37 @@ void PlayGame::checkCollisionPlayerItem() {
 						// play sound effect
 						Mix_PlayChannel(-1, settings.sCastHitBoss, 0);
 					}
+
+					// Power up 1
+					else if (item[i].id == 29) {
+
+						// Double shot power up
+						player.setPowerUp(1);
+
+						// Remove item
+						item[i].alive = false;
+						ite.count--;
+
+						// play sound effect
+						Mix_PlayChannel(-1, settings.sValidation, 0);
+					}
+
+					// Power up 2
+					else if (item[i].id == 30) {
+
+						// Triple shot power up
+						player.setPowerUp(2);
+
+						// Remove item
+						item[i].alive = false;
+						ite.count--;
+
+						// Increase player Gold keys
+						player.IncreaseHealth(25);
+
+						// play sound effect
+						Mix_PlayChannel(-1, settings.sValidation, 0);
+					}
 				}
 
 				// No collision
@@ -2207,7 +2250,9 @@ void PlayGame::checkCollisionParticleMob()
 
 	// Play hit sound effect
 	if (playHitSFX) {
-        Mix_PlayChannel(-1, settings.sParry, 0);
+
+		// Play hit sound effect
+		Mix_PlayChannel(-1, settings.sParrySuccess, 0);
 	}
 }
 
@@ -2431,7 +2476,9 @@ void PlayGame::checkPlayerAttacksCollisionMob() {
 
 	// Play hit sound effect: Slash attack
 	if (playHurtMob) {
-        Mix_PlayChannel(-1, settings.sSlashHitBoss, 0);
+
+		// play sound effect
+		Mix_PlayChannel(-1, settings.sSlashHitBoss, 0);
 	}
 }
 
@@ -2834,25 +2881,34 @@ void PlayGame::checkPlayerAttacksTileCollision() {
 											// Health reached 0
 											if (tile[i].health <= 0)
 											{
-												// Spawn random item
-												{
-													// Spawn health or coin
-													int randNum = rand() % 6;
-													int tempID;
+												// Spawn health or coin, or power up 1 or power up 2
+												int randNum = rand() % 10;
+												int tempID;
 
-													if (randNum == 0) {
-														tempID = 25;
-														ite.SpawnAndThrowItem(item,
-																tile[i].x+tile[i].w/2-ite.rSwords[tempID].w/2,
-																tile[i].y+tile[i].h/2-ite.rSwords[tempID].h/2,
-																tempID, 0.0, randDouble(1, 2));
-													} else if (randNum == 2) {
-														tempID = 28;
-														ite.SpawnAndThrowItem(item,
-																tile[i].x+tile[i].w/2-ite.rSwords[tempID].w/2,
-																tile[i].y+tile[i].h/2-ite.rSwords[tempID].h/2,
-																tempID, 0.0, randDouble(1, 2));
-													}
+												if (randNum >= 0 && randNum <= 2) {
+													tempID = 25;
+													ite.SpawnAndThrowItem(item,
+															tile[i].x+tile[i].w/2-ite.rSwords[tempID].w/2,
+															tile[i].y+tile[i].h/2-ite.rSwords[tempID].h/2,
+															tempID, 0.0, randDouble(1, 2));
+												} else if (randNum >= 3 && randNum <= 5) {
+													tempID = 28;
+													ite.SpawnAndThrowItem(item,
+															tile[i].x+tile[i].w/2-ite.rSwords[tempID].w/2,
+															tile[i].y+tile[i].h/2-ite.rSwords[tempID].h/2,
+															tempID, 0.0, randDouble(1, 2));
+												} else if (randNum == 6) {
+													tempID = 29;
+													ite.SpawnAndThrowItem(item,
+															tile[i].x+tile[i].w/2-ite.rSwords[tempID].w/2,
+															tile[i].y+tile[i].h/2-ite.rSwords[tempID].h/2,
+															tempID, 0.0, randDouble(1, 2));
+												} else if (randNum == 7) {
+													tempID = 30;
+													ite.SpawnAndThrowItem(item,
+															tile[i].x+tile[i].w/2-ite.rSwords[tempID].w/2,
+															tile[i].y+tile[i].h/2-ite.rSwords[tempID].h/2,
+															tempID, 0.0, randDouble(1, 2));
 												}
 
 												// If jar Tile
@@ -2882,6 +2938,10 @@ void PlayGame::checkPlayerAttacksTileCollision() {
 											playHitTile = true;
 											if (tile[i].id == 1) {
 												playPotSFX = true;
+									            Mix_PlayChannel(1, settings.sPotBreak, 0);
+									            Mix_PlayChannel(2, settings.sValidation, 0);
+											} else {
+									            Mix_PlayChannel(3, settings.sValidation, 0);
 											}
 										}
 										//----------------------------- Collision Detection based on player-attack hit-box and tile hit-box ------------------------------//
@@ -2902,13 +2962,13 @@ void PlayGame::checkPlayerAttacksTileCollision() {
 
         // Play Pot SFX
         if (playPotSFX) {
-            Mix_PlayChannel(-1, settings.sPotBreak, 0);
-            Mix_PlayChannel(-1, settings.sValidation, 0);
+            //Mix_PlayChannel(-1, settings.sPotBreak, 0);
+            //Mix_PlayChannel(-1, settings.sValidation, 0);
         }
 
         // Play default SFX
         else {
-            Mix_PlayChannel(-1, settings.sSlashTilec, 0);
+           // Mix_PlayChannel(-1, settings.sSlashTilec, 0);
         }
 	}
 
@@ -3493,18 +3553,30 @@ void PlayGame::checkBossOrMobDied() {
 			// If boss health goes lower than 0, remove boss
 			if (mob[i].health <= 0) {
 
-				// Spawn health or coin
-				int randNum = rand() % 6;
+				// Spawn health or coin, or power up 1 or power up 2
+				int randNum = rand() % 10;
 				int tempID;
 
-				if (randNum == 0) {
+				if (randNum >= 0 && randNum <= 2) {
 					tempID = 25;
 					ite.SpawnAndThrowItem(item,
 							mob[i].x+mob[i].w/2-ite.rSwords[tempID].w/2,
 							mob[i].y+mob[i].h/2-ite.rSwords[tempID].h/2,
 							tempID, 0.0, randDouble(1, 2));
-				} else if (randNum == 2) {
+				} else if (randNum >= 3 && randNum <= 5) {
 					tempID = 28;
+					ite.SpawnAndThrowItem(item,
+							mob[i].x+mob[i].w/2-ite.rSwords[tempID].w/2,
+							mob[i].y+mob[i].h/2-ite.rSwords[tempID].h/2,
+							tempID, 0.0, randDouble(1, 2));
+				} else if (randNum == 6) {
+					tempID = 29;
+					ite.SpawnAndThrowItem(item,
+							mob[i].x+mob[i].w/2-ite.rSwords[tempID].w/2,
+							mob[i].y+mob[i].h/2-ite.rSwords[tempID].h/2,
+							tempID, 0.0, randDouble(1, 2));
+				} else if (randNum == 7) {
+					tempID = 30;
 					ite.SpawnAndThrowItem(item,
 							mob[i].x+mob[i].w/2-ite.rSwords[tempID].w/2,
 							mob[i].y+mob[i].h/2-ite.rSwords[tempID].h/2,

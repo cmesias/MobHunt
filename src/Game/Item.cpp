@@ -47,7 +47,7 @@ void Item::Load(SDL_Renderer* gRenderer){
 		rSwords[22] = {90,30,6,12};
 
 		// Bomb
-		rSwords[23] = {100,30,14,13};
+		rSwords[23] = {99,33,11,11};
 
 		// Heart
 		rSwords[24] = {60,50,10,10};		// Heart (Used in UI, not in inventory or maybe it should? TODO)
@@ -61,8 +61,14 @@ void Item::Load(SDL_Renderer* gRenderer){
 		// Golden key
 		rSwords[27] = {87,45,7,15};
 
-		// Golden key
+		// Green health
 		rSwords[28] = {96,48,8,7};
+
+		// Power up 1
+		rSwords[29] = {99,22,12,8};
+
+		// Power up 2
+		rSwords[30] = {112,22,12,9};
 	}
 
 	// Other fonts
@@ -560,8 +566,8 @@ void Item::setStatsBasedOnType(Item item[], int i) {
 
 		// Bomb
 		if (item[i].id == 23) {
-			item[i].w = 14*2;
-			item[i].h = 13*2;
+			item[i].w = 11*2;
+			item[i].h = 11*2;
 		}
 
 		// Heart
@@ -598,6 +604,18 @@ void Item::setStatsBasedOnType(Item item[], int i) {
 		if (item[i].id == 26 || item[i].id == 27) {
 			item[i].w = 7*2;
 			item[i].h = 15*2;
+		}
+
+		// Power up 1
+		if (item[i].id == 29) {
+			item[i].w = 12*2;
+			item[i].h = 8*2;
+		}
+
+		// Power up 2
+		if (item[i].id == 30) {
+			item[i].w = 12*2;
+			item[i].h = 9*2;
 		}
 	}
 
