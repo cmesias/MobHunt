@@ -27,6 +27,7 @@
 //		[ ] - fix texture breaking sprite for jars barrels
 // 		[ ] - Mob keeps shooting at Player even when Player is not in sight of Mob
 // 		[ ] - Sound for sValidation does not apply properly the volume we have in config
+//		[ ] - fix crashing when about to remove all jars
 
 void PlayGame::Init() {
 
@@ -2171,6 +2172,9 @@ void PlayGame::checkPlayerTileCollision()
 					{
 						// If player is dashing
 						if (player.getDashStatus()) {
+
+							// Remove a jar from the vector
+							jarsLeft.pop_back();
 
 							// Remove Jar
 							tile[i].alive = false;

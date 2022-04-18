@@ -363,7 +363,8 @@ bool Tile::checkCollisionRect( SDL_Rect a, SDL_Rect b )
 void Tile::checkCollisionXY(Tile tile[],
 		float &x, float &y,
 		int w, int h,
-		float &vX, float &vY) {
+		float &vX, float &vY,
+		bool dashing) {
 
 	{
 		/*
@@ -425,8 +426,15 @@ void Tile::checkCollisionXY(Tile tile[],
 									}
 								}*/
 
-								// Continue handling collision
+								// If object is not a jar tile
 								moveBack = true;
+
+								// If tile was a jar Tile
+								if (tile[i].id == 1) {
+									if (dashing) {
+										moveBack = false;
+									}
+								}
 							}
 						}
 					}
@@ -473,6 +481,13 @@ void Tile::checkCollisionXY(Tile tile[],
 								}*/
 								// Continue handling collision
 								moveBack = true;
+
+								// If tile was a jar Tile
+								if (tile[i].id == 1) {
+									if (dashing) {
+										moveBack = false;
+									}
+								}
 							}
 						}
 					}

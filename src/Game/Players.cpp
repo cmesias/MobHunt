@@ -674,7 +674,8 @@ void Players::Update(Map &map,
 		tl.checkCollisionXY(tile,
 				this->x, this->y,
 				this->w, this->h,
-				this->vX, this->vY);
+				this->vX, this->vY,
+				this->dash);
 
 		//--------------------------- Movement & Collision w/ Tiles ----------------------//
 		//--------------------------------------------------------------------------------//

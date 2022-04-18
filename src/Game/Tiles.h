@@ -112,7 +112,7 @@ public:	// core game functions
 	bool checkCollisionRect( SDL_Rect a, SDL_Rect b );
 
 	// Tile collision check, player x position
-	void checkCollisionXY(Tile tile[], float &x, float &y, int w, int h, float &vX, float &vY);
+	void checkCollisionXY(Tile tile[], float &x, float &y, int w, int h, float &vX, float &vY, bool dashing);
 
 	void renderTile(SDL_Renderer *gRenderer, Tile tile[], int layer_dummy, int camx, int camy, SDL_Rect rJar[]);
 
