@@ -705,10 +705,10 @@ void PlayGame::Update(LWindow &gWindow, SDL_Renderer *gRenderer) {
 
 	// Update tiles
 	tl.updateTile(tile, gWindow, player.getX(), player.getY(), player.getW(), player.getH(),
-			newMx+camx, newMy+camy,
-			mex+camx, mey+camy,
-			camx, camy,
-			&rTiles[0]);
+							   newMx+camx, newMy+camy,
+							   mex+camx, mey+camy,
+							   camx, camy,
+							   &rTiles[0]);
 
 	// Update tiles
 	tlc.Update(tilec, map, newMx+camx, newMy+camy, mex+camx, mey+camy, camx, camy);
@@ -1322,6 +1322,24 @@ void PlayGame::RenderUI(SDL_Renderer *gRenderer, LWindow &gWindow)
 
 	// Render Player Health
 	player.RenderUI(gRenderer, camx, camy, this->LevelToLoad);
+
+	// Render number of enemies left
+	std::stringstream tempss;
+	tempss << "Eliminate: "<< mb.count;
+	fonts.gText.loadFromRenderedText(gRenderer, tempss.str().c_str(), {244, 144, 20}, fonts.gFont12);
+	fonts.gText.setAlpha(255);
+	fonts.gText.render(gRenderer, screenWidth * 0.95 - fonts.gText.getWidth(), screenHeight * 0.25,
+			fonts.gText.getWidth(), fonts.gText.getHeight());
+
+	// Render number of jars left
+	{
+		tempss.str(std::string());
+		tempss << "Destroy: "<< jarsLeft.size();
+		fonts.gText.loadFromRenderedText(gRenderer, tempss.str().c_str(), {244, 144, 20}, fonts.gFont12);
+		fonts.gText.setAlpha(255);
+		fonts.gText.render(gRenderer, screenWidth * 0.95 - fonts.gText.getWidth(), screenHeight * 0.25 + (fonts.gText.getHeight()*1),
+				fonts.gText.getWidth(), fonts.gText.getHeight());
+	}
 }
 
 // Render debug information
@@ -1662,8 +1680,12 @@ void PlayGame::checkCollisionParticleTile()
 
 													// If jar Tile
 													if (tile[j].id == 1) {
+
 														// Start breaking animation for Jar Tile
 														tile[j].startJarBreaking = true;
+
+														// Remove a jar from the vector
+														jarsLeft.pop_back();
 													}
 
 													// If Barrel Tile
@@ -1969,9 +1991,6 @@ void PlayGame::checkCollisionPlayerItem() {
 						item[i].alive = false;
 						ite.count--;
 
-						// Increase player Gold keys
-						player.IncreaseHealth(25);
-
 						// play sound effect
 						Mix_PlayChannel(-1, settings.sValidation, 0);
 					}
@@ -2000,8 +2019,12 @@ void PlayGame::checkPlayerTilceCollision() {
 
 					// If player is pressing equip
 					if (player.getEquipState()) {
-						// Load next area
-						{
+
+						// Update number of jars left
+						UpdateJarsLeft();
+
+						// If no more mods
+						if (mb.count == 0 && jarsLeft.size() == 0) {
 							// Save last known position for loading if we come back
 							lastKnownPositionX = player.getX();
 							lastKnownPositionY = player.getY();
@@ -2012,43 +2035,42 @@ void PlayGame::checkPlayerTilceCollision() {
 							// Set next level or stage to whatever the Tilec has stored
 							this->LevelToLoad = tilec[i].LevelToLoad;
 
-							// Set players new position based on what tilec has stored in "newPos"
-
-							// Appear at Top of map
-							if (tilec[i].newPos == 0)
-							{
-								player.checkpointX	= 276;
-								player.checkPointY	= 68;
-								player.x			= 276;
-								player.y			= 68;
-							// Appear at Right of map
-							} else if (tilec[i].newPos == 1)
-							{
-								player.checkpointX	= 468;
-								player.checkPointY	= 153;
-								player.x			= 468;
-								player.y			= 153;
-							// Appear at Bottom of map
-							} else if (tilec[i].newPos == 2)
-							{
-								player.checkpointX	= 276;
-								player.checkPointY	= 229;
-								player.x			= 276;
-								player.y			= 229;
-							// Appear at Left of map
-							} else if (tilec[i].newPos == 3)
-							{
-								player.checkpointX	= 85;
-								player.checkPointY	= 153;
-								player.x			= 85;
-								player.y			= 153;
-							}
-
 							// Load next level or stage
 							LoadLevel();
 
 							// play sound effect
 							Mix_PlayChannel(-1, settings.sCastHitBoss, 0);
+						}
+
+						// Some mobs are still alive, notify player to eliminate all mobs
+						else {
+
+							// If there are more mobs, notify User
+							if (mb.count != 0) {
+
+								std::stringstream tempss;
+								tempss << mb.count << " mobs left!";
+								tex.spawn(gRenderer, text,
+										tilec[i].x+tilec[i].w/2,
+										tilec[i].y-22,
+										0.0, -0.4, 150,
+										tempss.str().c_str(), 1, {250, 30, 20, 255});
+							}
+
+							// If there are more jars, notify User
+							if (jarsLeft.size() != 0) {
+
+								std::stringstream tempss;
+								tempss << jarsLeft.size() << " jars left!";
+								tex.spawn(gRenderer, text,
+										tilec[i].x+tilec[i].w/2,
+										tilec[i].y-10,
+										0.0, -0.4, 150,
+										tempss.str().c_str(), 1, {30, 250, 250, 255});
+							}
+
+							// play sound effect
+							Mix_PlayChannel(-1, settings.sDownStabHitTilec, 0);
 						}
 					}
 				} else {
@@ -2067,7 +2089,7 @@ void PlayGame::checkPlayerTileCollision()
 		{
 			if (tile[i].collisionTile)
 			{
-				// Locked door Tile
+				// Floor door Tile
 				if (tile[i].id == 5)
 				{
 					// If collision happened
@@ -2078,7 +2100,7 @@ void PlayGame::checkPlayerTileCollision()
 						tile[i].promptSelf = true;
 
 						// If player has enough keys
-						if (player.getSilverKeys() > 0) {
+						/*if (player.getSilverKeys() > 0) {
 
 							// If player is pressing equip
 							if (player.getEquipState()) {
@@ -2094,7 +2116,7 @@ void PlayGame::checkPlayerTileCollision()
 								// play sound effect
 								Mix_PlayChannel(-1, settings.sCastHitBoss, 0);
 							}
-						}
+						}*/
 					} else {
 						tile[i].promptSelf = false;
 					}
@@ -2137,6 +2159,27 @@ void PlayGame::checkPlayerTileCollision()
 						//}
 					} else {
 						tile[i].promptSelf = false;
+					}
+				}
+
+				// Jar Tile
+				if (tile[i].id == 1)
+				{
+					// If collision happened
+					if (checkCollision(player.getX(), player.getY(), player.getW(), player.getH(),
+									   tile[i].x-3, tile[i].y-3, tile[i].w+6, tile[i].h+6))
+					{
+						// If player is dashing
+						if (player.getDashStatus()) {
+
+							// Remove Jar
+							tile[i].alive = false;
+							tl.tileCount--;
+
+							// Play SFX
+				            Mix_PlayChannel(1, settings.sPotBreak, 0);
+				            Mix_PlayChannel(2, settings.sValidation, 0);
+						}
 					}
 				}
 			}
@@ -2916,6 +2959,9 @@ void PlayGame::checkPlayerAttacksTileCollision() {
 
 													// Start breaking animation for Jar Tile
 													tile[i].startJarBreaking = true;
+
+													// Remove a jar from the vector
+													jarsLeft.pop_back();
 												}
 
 												// If Barrel Tile
@@ -3509,10 +3555,20 @@ void PlayGame::checkCollisionParticleParticle() {
 									// Reduce health of Enemey Particle
 									particles[j].health -= particles[i].dmgToParticles;
 
-									// Remove Player particle next
-									particles[i].time = 0;
-									particles[i].alive = false;
-									part.count--;
+									// If its a large Player particle, just reduce its health
+									if (particles[i].w == 50) {
+
+										// Reduce health of Player Particle
+										particles[i].health -= particles[j].dmgToParticles;
+									}
+									// If regular sized particle from Player, just remove it
+									else {
+
+										// Remove particle
+										particles[i].time = 0;
+										particles[i].alive = false;
+										part.count--;
+									}
 
 									// Spawn blood VFX
 									part.spawnBloodVFX(particles, particles[j].x, particles[j].y, particles[j].w, particles[j].h, {0, 240, 240});
@@ -4554,103 +4610,12 @@ void PlayGame::LoadLevel()
 	player.x		= this->spawnX;
 	player.y		= this->spawnY;
 
-	// Only do this for level 1
-	if (previousLevel == LevelToLoad) {
-		if (LevelToLoad == 1) {
-			//layer.x		= this->spawnX;
-			//player.y		= this->spawnY;
-		}
-	}
-
-	// Left -> Right
-	if (previousLevel < LevelToLoad) {
-	//	player.x		= 272;
-	//	player.y		= lastKnownPositionY;
-	}
-
-
-	// Left <- Right
-	if (previousLevel > LevelToLoad) {
-	//	player.x		= 1200;
-	//	player.y		= lastKnownPositionY;
-	}
-
-	// Appear at Top of map
-	//player.x		= 276;
-	//player.y		= 68;
-
-	// Appear at Bottom of map
-	//player.x		= 276;
-	//player.y		= 229;
-
-	// Appear at Left of map
-	//player.x		= 85;
-	//player.y		= 153;
-
-	// Appear at Right of map
-	//player.x		= 468;
-	//player.y		= 153;
-
-
-	// Spawn for 1 -> 2
-	/*if (previousLevel == 1) {
-		if (LevelToLoad == 2) {
-			player.x		= 276;
-			player.y		= 229;
-		}
-	}
-
-	// Spawn for 2 -> 1
-	if (previousLevel == 2) {
-		if (LevelToLoad == 1) {
-			player.x		= 276;
-			player.y		= 68;
-		}
-	}
-
-	// Spawn for 2 -> 3
-	if (previousLevel == 2) {
-		if (LevelToLoad == 3) {
-			player.x		= 468;
-			player.y		= 153;
-		}
-	}
-
-	// Spawn for 3 -> 2
-	if (previousLevel == 3) {
-		if (LevelToLoad == 2) {
-			player.x		= 85;
-			player.y		= 153;
-		}
-	}
-
-	// Spawn for 2 -> 4
-	if (previousLevel == 2) {
-		if (LevelToLoad == 4) {
-			player.x		= 85;
-			player.y		= 153;
-		}
-	}
-
-	// Spawn for 4 -> 2
-	if (previousLevel == 4) {
-		if (LevelToLoad == 2) {
-			player.x		= 468;
-			player.y		= 153;
-		}
-	}*/
-
 	// Center camera right way so it doesnt look like its panning to that location
 	camx  = player.x+player.w/2-screenWidth/2;
 	camy  = player.y+player.h/2-screenHeight/2;
 
-	// Spawn on left side of level
-	//player.x		= 272;
-	//player.y		= 320;
-
-	// Spawn on right side of level
-	//player.x		= 1200;
-	//player.y		= 320;
+	// Update number of jars left
+	UpdateJarsLeft();
 }
 
 void PlayGame::LoadAudioSettings() {

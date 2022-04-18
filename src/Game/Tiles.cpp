@@ -190,11 +190,13 @@ void Tile::spawnTile(Tile tile[], int newMx, int newMy, int camx, int camy, SDL_
 	}
 }
 
-void Tile::updateTile(Tile tile[], LWindow &gWindow,
+bool Tile::updateTile(Tile tile[], LWindow &gWindow,
 					  float targetX, float targetY, float targetW, float targetH,
 					  int newMx, int newMy,
 					  int mex, int mey, int camx, int camy,
 					  SDL_Rect rTiles[]) {
+
+	bool didWeRemoveAJarTile = false;
 
 	//std::cout << "newMx: " << newMx << std::endl;
 	//std::cout << "newMy: " << newMy << std::endl;
@@ -263,6 +265,8 @@ void Tile::updateTile(Tile tile[], LWindow &gWindow,
 						// Last frame of jar being destroyed
 						if (tile[i].jarIndex > 5) {
 
+							didWeRemoveAJarTile = true;
+
 							// Remove tile
 							tile[i].startJarBreaking = false;
 							tile[i].alive = false;
@@ -305,6 +309,8 @@ void Tile::updateTile(Tile tile[], LWindow &gWindow,
 			}*/
 		}
 	}
+
+	return didWeRemoveAJarTile;
 }
 
 

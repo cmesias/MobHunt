@@ -115,7 +115,7 @@ void Particle::spawnParticleAngle(Particle particle[], int renderType, int hurtT
 			}
 			if (renderType == 1) {
 
-				particle[i].yOffsetShadow 	= 30;
+				particle[i].yOffsetShadow 	= 20;
 			}
 			if (renderType == 2) {
 
@@ -337,7 +337,7 @@ void Particle::spawnProjectileAttack(Particle particle[], int hurtType, float sp
 			spawnY,
 			spawnW, spawnH,
 			angle, speed,
-			damage, damage, 1,
+			damage, damage, 50,
 			color, 1,
 			   1, 1,
 			   255, 0,

@@ -47,8 +47,7 @@ public:
 
 	/*
 	 * 0: Used to collide with the player to move into a new area/level
-	 * 306: locked door
-	 * 309: Unlocked door
+	 * 1: Jar
 	 */
 	int id;
 	int alpha;
@@ -104,7 +103,7 @@ public:	// editor functions
 	void spawnTile(Tile tile[], int newMx, int newMy, int camx, int camy, SDL_Rect rTiles[]);
 
 public:	// core game functions
-	void updateTile(Tile tile[], LWindow &gWindow,
+	bool updateTile(Tile tile[], LWindow &gWindow,
 			  float targetX, float targetY, float targetW, float targetH,
 			  int newMx, int newMy,
 			  int mex, int mey, int camx, int camy,

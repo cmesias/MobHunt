@@ -339,8 +339,10 @@ void Players::fire(Particle particle[], Particle &p_dummy, Mix_Chunk *sCastSFX, 
 	trigger = initialshot;
 
 	// Get player angle based on mouse coordinates
-	angle = atan2(my - y-h/2,mx - x-w/2);
-	angle = angle * (180 / 3.1416);
+	if (this->ControlsPreference == 1) {
+		angle = atan2(my - y-h/2,mx - x-w/2);
+		angle = angle * (180 / 3.1416);
+	}
 	//Set player angle max limits
 	if (angle < 0) {
 		angle = 360 - (-angle);
@@ -361,19 +363,12 @@ void Players::fire(Particle particle[], Particle &p_dummy, Mix_Chunk *sCastSFX, 
 			{
 				shootDelay = true;
 
-				// play audio
-				//Mix_PlayChannel(-1, settings->sCast, 0);
+				float particleShadowOffset = 14;
 
 				// Offset to spawn the Slash Attack
-				int offSetX =0;
-				if (facing == "left") {
-					offSetX = 32;
-				}
-				else if (facing == "right") {
-					offSetX = 0;
-				}
-				float spawnX = x+w/2-offSetX;
-				float spawnY = y+w/2;
+				float size = 16;
+				float spawnX = x+w/2 - size/2;
+				float spawnY = y+w/2 - size/2;
 
 				// Default attack
 				if (powerUp == 0) {
@@ -381,13 +376,12 @@ void Players::fire(Particle particle[], Particle &p_dummy, Mix_Chunk *sCastSFX, 
 					// Spawn Slash Attack particle
 					p_dummy.spawnRedProjectileAttack(particle, 0,
 							spawnX, spawnY,
-							16, 16,
+							size, size,
 							this->angle, this->castDamage, 9);
 				}
 
 				// Power up 1
 				else if (powerUp == 1) {
-
 
 					// Spawn projectile
 					int rands  = 24;
@@ -396,8 +390,8 @@ void Players::fire(Particle particle[], Particle &p_dummy, Mix_Chunk *sCastSFX, 
 					for (double j=0.0; j< 30.0; j+=10){
 						p_dummy.spawnProjectileAttack(particle, 0,
 								this->x + this->w/2 - rands/2,
-								this->y + this->h/2 - rands/2,
-								rands, rands, this->angle+j, this->castDamage/4, speed,
+								this->y + this->h/2 - rands/2 + particleShadowOffset,
+								rands, rands, this->angle-10+j, this->castDamage/4, speed,
 								{220, 90, 90});
 					}
 
@@ -409,16 +403,16 @@ void Players::fire(Particle particle[], Particle &p_dummy, Mix_Chunk *sCastSFX, 
 				else if (powerUp == 2) {
 
 					// Spawn projectile
-					int rands  = 24;
+					int rands  = 50;
 					float speed  = 6;
 
-					for (double j=0.0; j< 45.0; j+=9){
+					//for (double j=0.0; j< 30.0; j+=10){
 						p_dummy.spawnProjectileAttack(particle, 0,
 								this->x + this->w/2 - rands/2,
-								this->y + this->h/2 - rands/2,
-								rands, rands, this->angle-11+j, this->castDamage/4, speed,
+								this->y + this->h/2 - rands/2 + particleShadowOffset,
+								rands, rands, this->angle, this->castDamage/4, speed,
 								{90, 220, 90});
-					}
+					//}
 				}
 
 				// Subtract mana
@@ -519,6 +513,15 @@ void Players::Update(Map &map,
 		//--------------------------------------------------------------------------------//
 		//----------------------------------- Movement -----------------------------------//
 		{
+			// If sprinting, change max movement speed
+			if (this->sprint) {
+				velMax = 4;
+				velSpeed = 1;
+			} else {
+				velMax = 2;
+				velSpeed = 0.5;
+			}
+
 			// X Axis movement
 			{
 				// Move left
@@ -531,6 +534,7 @@ void Players::Update(Map &map,
 				        if (!this->shift) {
 				        	this->facing = "left";
 				        	this->sprite_dir = 24;
+				        	this->angle = 180.0;
 				        }
 					}
 				}
@@ -544,6 +548,7 @@ void Players::Update(Map &map,
 				        if (!this->shift) {
 				        	this->facing = "right";
 				        	this->sprite_dir = 16;
+				        	this->angle = 0.0;
 				        }
 					}
 				}
@@ -561,6 +566,7 @@ void Players::Update(Map &map,
 				        if (!this->shift) {
 				        	this->facing = "up";
 				        	this->sprite_dir = 8;
+				        	this->angle = 270.0;
 				        }
 					}
 				}
@@ -574,6 +580,7 @@ void Players::Update(Map &map,
 				        if (!this->shift) {
 				        	this->facing = "down";
 				        	this->sprite_dir = 0;
+				        	this->angle = 90.0;
 				        }
 					}
 				}
@@ -609,6 +616,31 @@ void Players::Update(Map &map,
 				else if (this->angle >= 225 && this->angle < 315) {
 		        	this->facing = "up";
 		        	this->sprite_dir = 8;
+				}
+			}
+
+			// Handle mouse and keyboard controls
+			else {
+
+				if (!this->shift) {
+
+					// Top right
+					if (moveup && moveright) {
+						this->angle = 315.0;
+					}
+					// Bottom right
+					else if (movedown && moveright) {
+						this->angle = 45.0;
+					}
+
+					// Top left
+					if (moveup && moveleft) {
+						this->angle = 225.0;
+					}
+					// Bottom left
+					else if (movedown && moveleft) {
+						this->angle = 135.0;
+					}
 				}
 			}
 
@@ -1367,6 +1399,9 @@ void Players::Update(Map &map,
 		// Player not moving
 		if (!moveup && !movedown && !moveleft && !moveright && !dash) {
 			moving = false;
+
+			// Stop sprinting
+			sprint = false;
 		}
 
 		//-------------------------------- Stop Movement ---------------------------------//
@@ -2092,6 +2127,9 @@ void Players::OnKeyDown(SDL_Keycode sym )
 		break;
 	case SDLK_3:
 		itemIndex = 2;
+		break;
+	case SDLK_LCTRL:
+		sprint = true;
 		break;
 	}
 }

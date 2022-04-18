@@ -60,6 +60,11 @@ public:	// globals
 	bool leftClick = false;
 	bool rightClick = false;
 
+public:	// Objectives
+
+	// mob.count
+	std::vector<Tile> jarsLeft;
+
 public:
     // camera
     float camx;
@@ -285,6 +290,25 @@ public:	// Core functions
 	void RenderText(SDL_Renderer *gRenderer, LWindow &gWindow);
 
 public:	// Functions mixed with other classes
+
+	/* Update number of Jars left
+	 * 1. When LoadLevel() is called
+	 * 2. When attempting to open a floor
+	 * 	  door Tile but there are mobs/jars left
+	 * 3. When a jar is broken
+	 */
+	void UpdateJarsLeft() {
+		// Get number of Tile jars left on the map
+		jarsLeft.clear();
+		for (int j = 0; j < tl.max; j++) {
+			if (tile[j].alive){
+				if (tile[j].id == 1) {
+					jarsLeft.push_back(tile[j]);
+				}
+			}
+		}
+	}
+
 
 	/* Notes on some orders:
 	 *

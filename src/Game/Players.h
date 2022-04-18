@@ -138,7 +138,7 @@ public:	// resources
 	 * 0: Keyboard
 	 * 1: Keyboard + Mouse
 	 */
-	int ControlsPreference = 1;	// default: 0
+	int ControlsPreference = 0;	// default: 0
 
 public:	// variables
 
@@ -200,14 +200,15 @@ private:
 		 moveright 		= false,
 		 moveup 		= false,
 		 movedown		= false;
-	bool moving = false;
+	bool moving 		= false;
+	bool sprint			= false;
 	float walkTimerVFX;
 	const float walkTimerSpe = 10;
 	float walkTimer;
 	float vX 			= 0.0;
 	float vY 			= 0.0;
-	const float velSpeed= 0.5;
-	const float velMax 	= 2;
+	float velSpeed		= 0.5;
+	float velMax 		= 2;
 
 	// Invulnerability ability
 	int invurnerableFrame;
